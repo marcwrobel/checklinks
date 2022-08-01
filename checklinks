@@ -51,12 +51,13 @@ function doCurl() {
 
 [ ! -d "$1" ] && echo "'$1'  is not a directory" && exit 1
 
-URLS_AND_FILES=$(grep -RioE --exclude-dir={.git,.idea,target,output} --exclude=*.{class,svg} "$URL_REGEX" .)
+# Some links may have a trailing \r, that must be removed...
+URLS_AND_FILES=$(grep -RioE --exclude-dir={.git,.idea,target,output} --exclude=*.{class,svg} "$URL_REGEX" . | tr -d '\r')
 
 # Links are processed in a random order to reduce the risk of being blacklisted and temporarily blocked
 for url in $(echo "$URLS_AND_FILES" | cut -d ':' -f 2- | sort | uniq | sort -R); do
   if [[ "$url" =~ $EXCLUDED_URLS ]]; then
-    echo -e "${LIGHT_GREEN}$url (IGNORED)${NO_COLOR}"
+    echo -e "${LIGHT_GREEN}${url} (IGNORED)${NO_COLOR}"
 
   else
     # we could use --head, but it is not always supported...
@@ -67,15 +68,15 @@ for url in $(echo "$URLS_AND_FILES" | cut -d ':' -f 2- | sort | uniq | sort -R);
         https_status=$(doCurl "${url/http:\/\//https:\/\/}")
 
         if [ "$https_status" = "200" ]; then
-          echo -e "${BLUE}$url ($status) ${RED}(HTTPS link available)${NO_COLOR}"
+          echo -e "${BLUE}${url} ($status) ${RED}(HTTPS link available)${NO_COLOR}"
         else
-          echo -e "${BLUE}$url ($status) (HTTPS link unavailable)${NO_COLOR}"
+          echo -e "${BLUE}${url} ($status) (HTTPS link unavailable)${NO_COLOR}"
         fi
       else
-        echo -e "${GREEN}$url ($status)${NO_COLOR}"
+        echo -e "${GREEN}${url} ($status)${NO_COLOR}"
       fi
     else
-      echo -e "${RED}$url ($status)${NO_COLOR}"
+      echo -e "${RED}${url} ($status)${NO_COLOR}"
     fi
   fi
 done
