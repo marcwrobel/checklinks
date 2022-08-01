@@ -10,22 +10,31 @@ TIMEOUT=3 # seconds
 URL_REGEX='https?://[^][{} "`<>),*$|\\]*[^][{} "`<>),*$|\\.:'"'"']'
 EXCLUDED_URLS="https?://(\
 localhost|\
-old.nabble.com|\
-news.gmane.org|\
 [0-9]+|\
 .+:[0-9]+|\
-example|\
-[^/]+.example|\
-host|\
-somehost|\
-nohost|\
-link|\
-acme.org|\
-foo|\
-application|\
+old.nabble.com|\
+news.gmane.org|\
 registry.npmjs.org|\
-apache.org/xml/features|\
-java.sun.com/xml/ns|\
+[^/]+.example|\
+acme|\
+anyhost|\
+application|\
+example|\
+foo|\
+host|\
+link|\
+myhost|\
+myusername|\
+nohost|\
+somehost|\
+testuser|\
+apache.org/xml|\
+www.apache.org/xml|\
+java.sun.com/xml|\
+java.sun.com/notes|\
+java.sun.com/j2ee/dtds|\
+maven.apache.org/changes/1.0.0|\
+maven.apache.org/POM/4.0.0|\
 javax.xml.XMLConstants)"
 
 # https://www.shellhacks.com/bash-colors/
