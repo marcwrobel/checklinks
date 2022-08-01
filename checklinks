@@ -33,8 +33,9 @@ GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# --compressed : https://github.com/github/docs/issues/17358
 function doCurl() {
-  curl -o /dev/null --silent --connect-timeout "$TIMEOUT" --retry $RETRY --retry-delay $RETRY_DELAY --user-agent "$USER_AGENT" --location --write-out '%{http_code}' "$1"
+  curl -o /dev/null --silent --compressed --connect-timeout "$TIMEOUT" --retry $RETRY --retry-delay $RETRY_DELAY --user-agent "$USER_AGENT" --location --write-out '%{http_code}' "$1"
 }
 
 [ ! -d "$1" ] && echo "'$1'  is not a directory" && exit 1
