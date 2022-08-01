@@ -5,6 +5,7 @@ RETRY=1
 RETRY_DELAY=10
 TIMEOUT=3 # seconds
 
+URL_REGEX='https?://[^][{} "`<>),*$|\\]*[^][{} "`<>),*$|\\.:'"'"']'
 EXCLUDED_URLS="https?://(\
 localhost|\
 old.nabble.com|\
@@ -33,10 +34,8 @@ NC='\033[0m' # No Color
 
 [ ! -d "$1" ] && echo "'$1'  is not a directory" && exit 1
 
-echo "'$EXCLUDED_URLS'"
-
 # Links are processed in a random order to reduce the risk of being blacklisted and temporarily blocked
-for url in $(grep -RioEh 'https?://[^][{} "`<>),*$|\\]*[^][{} "`<>),*$|\\.:'"'"']' | sort | uniq | sort -R); do
+for url in $(grep -RioEh --exclude-dir={.git,.idea,target,output} --exclude=*.{class,svg} "$URL_REGEX" | sort | uniq | sort -R); do
   if [[ "$url" =~ $EXCLUDED_URLS ]]; then
     echo -e "${GRAY}$url (IGNORED)${NC}"
 
