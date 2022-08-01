@@ -28,10 +28,12 @@ apache.org/xml/features|\
 java.sun.com/xml/ns|\
 javax.xml.XMLConstants)"
 
+# https://www.shellhacks.com/bash-colors/
+LIGHT_GREEN='\033[1;32m'
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+NO_COLOR='\033[0m'
 
 # --compressed : https://github.com/github/docs/issues/17358
 function doCurl() {
@@ -45,7 +47,7 @@ URLS_AND_FILES=$(grep -RioE --exclude-dir={.git,.idea,target,output} --exclude=*
 # Links are processed in a random order to reduce the risk of being blacklisted and temporarily blocked
 for url in $(echo "$URLS_AND_FILES" | cut -d ':' -f 2- | sort | uniq | sort -R); do
   if [[ "$url" =~ $EXCLUDED_URLS ]]; then
-    echo -e "${GREEN}$url (IGNORED)${NC}"
+    echo -e "${LIGHT_GREEN}$url (IGNORED)${NO_COLOR}"
 
   else
     # we could use --head, but it is not always supported...
@@ -54,16 +56,17 @@ for url in $(echo "$URLS_AND_FILES" | cut -d ':' -f 2- | sort | uniq | sort -R);
     if [ "$status" = "200" ]; then
       if [[ $url =~ "http://" ]]; then
         https_status=$(doCurl "${url/http:\/\//https:\/\/}")
+
         if [ "$https_status" = "200" ]; then
-          echo -e "${BLUE}$url ($status - HTTPS OK)${NC}"
+          echo -e "${BLUE}$url ($status) ${GREEN}(HTTPS link available)${NO_COLOR}"
         else
-          echo -e "${BLUE}$url ($status - HTTPS KO)${NC}"
+          echo -e "${BLUE}$url ($status) ${RED}(HTTPS link unavailable)${NO_COLOR}"
         fi
       else
-        echo -e "${GREEN}$url ($status)${NC}"
+        echo -e "${GREEN}$url ($status)${NO_COLOR}"
       fi
     else
-      echo -e "${RED}$url ($status)${NC}"
+      echo -e "${RED}$url ($status)${NO_COLOR}"
     fi
   fi
 done
