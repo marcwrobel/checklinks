@@ -52,7 +52,7 @@ function doCurl() {
 [ ! -d "$1" ] && echo "'$1'  is not a directory" && exit 1
 
 # Some links may have a trailing \r, that must be removed...
-URLS_AND_FILES=$(grep -RioE --exclude-dir={.git,.idea,target,output} --exclude=*.{class,svg} "$URL_REGEX" . | tr -d '\r')
+URLS_AND_FILES=$(grep -RioE --exclude-dir={.git,.idea,target,output} --exclude=*.{class,png,svg,ttf} "$URL_REGEX" . | tr -d '\r')
 
 # Links are processed in a random order to reduce the risk of being blacklisted and temporarily blocked
 for url in $(echo "$URLS_AND_FILES" | cut -d ':' -f 2- | sort | uniq | sort -R); do
