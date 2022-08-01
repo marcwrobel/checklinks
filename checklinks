@@ -67,9 +67,9 @@ for url in $(echo "$URLS_AND_FILES" | cut -d ':' -f 2- | sort | uniq | sort -R);
         https_status=$(doCurl "${url/http:\/\//https:\/\/}")
 
         if [ "$https_status" = "200" ]; then
-          echo -e "${BLUE}$url ($status) ${GREEN}(HTTPS link available)${NO_COLOR}"
+          echo -e "${BLUE}$url ($status) ${RED}(HTTPS link available)${NO_COLOR}"
         else
-          echo -e "${BLUE}$url ($status) ${RED}(HTTPS link unavailable)${NO_COLOR}"
+          echo -e "${BLUE}$url ($status) (HTTPS link unavailable)${NO_COLOR}"
         fi
       else
         echo -e "${GREEN}$url ($status)${NO_COLOR}"
