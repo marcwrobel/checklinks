@@ -65,7 +65,10 @@ NO_COLOR='\033[0m'
 
 # --compressed : https://github.com/github/docs/issues/17358
 function doCurl() {
-  curl -o /dev/null --silent --compressed --connect-timeout "$TIMEOUT" --retry $RETRY --retry-delay $RETRY_DELAY --user-agent "$USER_AGENT" --location --write-out '%{http_code}' "$1"
+  url=$1
+  write_out=${2:-http_code}
+  options=${3:-}
+  curl -o /dev/null --silent --compressed --connect-timeout "$TIMEOUT" --retry $RETRY --retry-delay $RETRY_DELAY --user-agent "$USER_AGENT" --write-out "%{$write_out}" $options "$url"
 }
 
 [ ! -d "$1" ] && echo "'$1'  is not a directory" && exit 1
@@ -80,11 +83,11 @@ for url in $(echo "$URLS_AND_FILES" | cut -d ':' -f 2- | sort | uniq | sort -R);
 
   else
     # we could use --head, but it is not always supported...
-    status=$(doCurl "$url")
+    status=$(doCurl "$url" 'http_code')
 
     if [ "$status" = "200" ]; then
       if [[ $url =~ "http://" ]]; then
-        https_status=$(doCurl "${url/http:\/\//https:\/\/}")
+        https_status=$(doCurl "${url/http:\/\//https:\/\/}" 'http_code')
 
         if [ "$https_status" = "200" ]; then
           echo -e "${BLUE}${url} ($status) ${RED}(HTTPS link available)${NO_COLOR}"
@@ -94,6 +97,9 @@ for url in $(echo "$URLS_AND_FILES" | cut -d ':' -f 2- | sort | uniq | sort -R);
       else
         echo -e "${GREEN}${url} ($status)${NO_COLOR}"
       fi
+    elif [ "$status" = '301' -o "$status" = '302' -o "$status" = '303' ]; then
+      redirect_url=$(doCurl "$url" 'url_effective' '--location')
+      echo -e "${BLUE}${url} ($status) ${RED}(redirected to $redirect_url)${NO_COLOR}"
     else
       echo -e "${RED}${url} ($status)${NO_COLOR}"
     fi
