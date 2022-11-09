@@ -12,6 +12,8 @@ EXCLUDED_URLS="https?://(\
 localhost|\
 [0-9]+|\
 .+:[0-9]+|\
+.+__LATEST__|\
+.+__RELEASE_CYCLE__|\
 abc|\
 acme|\
 anyhost|\
@@ -33,12 +35,14 @@ wrong|\
 www.bar|\
 www.foo|\
 www.server|\
+your-server-url|\
 [^/]+.acme|\
 [^/]+.example|\
 apache.org/xml|\
 java.sun.com/xml|\
 java.sun.com/notes|\
 java.sun.com/j2ee/dtds|\
+jkrowling.com|\
 logging.apache.org/log4j/2.0|\
 maven.apache.org/changes|\
 maven.apache.org/maven-v4_0_0.xsd|\
@@ -63,8 +67,28 @@ xmlns.jcp.org/xml|\
 javax.xml.XMLConstants\
 )"
 
-EXCLUDED_REDIRECTS="https?://(\
-github.com\
+# Those links are localized or updated.
+EXCLUDED_REDIRECTS="https://(\
+aka.ms|\
+aws.amazon.com|\
+azure.microsoft.com|\
+cdn.amazonlinux.com|\
+dotnet.microsoft.com|\
+euro-linux.com  |\
+github.com|\
+img.shields.io|\
+learn.microsoft.com|\
+stackoverflow.com/a|\
+support.apple.com|\
+support.fortinet.com|\
+support.hashicorp.com|\
+support.microsoft.com|\
+support.mozilla.org|\
+unpkg.com|\
+www.amazon.com|\
+www.apple.com|\
+www.microsoft.com|\
+www.mozilla.org\
 )"
 
 # https://www.shellhacks.com/bash-colors/
@@ -109,10 +133,11 @@ for url in $(echo "$URLS_AND_FILES" | cut -d ':' -f 2- | sort | uniq | sort -R);
         echo -e "${GREEN}${url} ($status)${NO_COLOR}"
       fi
     elif [ "$status" = '301' ] || [ "$status" = '302' ] || [ "$status" = '303' ]; then
+      redirect_url=$(doCurl "$url" 'url_effective' '--location')
+
       if [[ "$url" =~ $EXCLUDED_REDIRECTS ]]; then
-        echo -e "${GREEN}${url} ($status)${NO_COLOR}"
+        echo -e "${GREEN}${url} ($status) (redirected to $redirect_url)${NO_COLOR}"
       else
-        redirect_url=$(doCurl "$url" 'url_effective' '--location')
         echo -e "${BLUE}${url} ($status) ${RED}(redirected to $redirect_url)${NO_COLOR}"
       fi
     else
